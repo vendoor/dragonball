@@ -1,2 +1,3 @@
-# dragonball
-Database administration CLI for Vendoor.
+# Dragonball
+
+Command line database administration toolkit.
