@@ -6,6 +6,8 @@ import me.vendoor.dragonball.dsl.database
 fun vendoorDatabaseSpecification(config: Config) = database {
     name { config.getString("database.name") }
 
+    version { "1.0.0" }
+
     collections {
     }
 }
