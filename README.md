@@ -25,7 +25,7 @@ Dragonball commands make use of a configuration file (in HOCON format). An examp
 
 Initializes an empty database.
 
-The database specification (collections, indexes, etc.) can be found in [VendoorDatabaseSpecification.kt](src/main/kotlin/me/vendoor/dragonball/specification/VendoorDatabaseSpecification.kt). Modify this file if you want to configure the way the database is initialized (for example, a new collection should be created).
+The database specification (collections, indexes, etc.) can be found in [VendoorDatabaseSpecification.kt](src/main/kotlin/me/vendoor/dragonball/specification/VendoorDatabaseSpecification.kt). Modify this file if you want to configure the way the database is initialized (for example, a new collection should be created). For a primer on the specification DSL, please refer to [Specification DSL](docs/specification-dsl.md).
 
 ~~~~
 java -jar target/dragonball-latest.jar setup --config-file=./config/vendoor.conf
