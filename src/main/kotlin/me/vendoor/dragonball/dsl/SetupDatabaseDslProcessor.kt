@@ -18,6 +18,12 @@ fun setupDatabaseFromSpecification(client: MongoClient, specification: DatabaseS
     DatabaseSpecificationProcessor(client, specification).process()
 
 private class DatabaseSpecificationProcessor(val client: MongoClient, val specification: DatabaseSpecification) {
+    companion object {
+        private const val MIGRATION_COLLECTION_NAME = "Migration"
+        private const val MIGRATION_COLLECTION_TIMESTAMP_INDEX_NAME = "migration-timestamp-desc"
+        private const val SETUP_MIGRATION_DESCRIPTION = "New setup."
+    }
+
     fun process() {
         val database = obtainDatabase()
 
@@ -33,7 +39,7 @@ private class DatabaseSpecificationProcessor(val client: MongoClient, val specif
     private fun recordMigration(version: String, database: MongoDatabase) {
         val options = CreateCollectionOptions()
 
-        val collection = obtainCollection("Migration", options, database)
+        val collection = obtainCollection(MIGRATION_COLLECTION_NAME, options, database)
 
         createMigrationIndex(collection)
 
@@ -44,7 +50,7 @@ private class DatabaseSpecificationProcessor(val client: MongoClient, val specif
         val fields = BsonDocument("timestamp", BsonInt32(-1))
         val options = IndexOptions()
 
-        createIndex(fields, "migration-timestamp-desc", options, collection)
+        createIndex(fields, MIGRATION_COLLECTION_TIMESTAMP_INDEX_NAME, options, collection)
     }
 
     private fun versionDocument(version: String): BsonDocument {
@@ -52,7 +58,7 @@ private class DatabaseSpecificationProcessor(val client: MongoClient, val specif
 
         document["timestamp"] = BsonInt64(TimeSource.currentTimestamp())
         document["version"] = BsonString(version)
-        document["description"] = BsonString("New setup.")
+        document["description"] = BsonString(SETUP_MIGRATION_DESCRIPTION)
 
         return document
     }
