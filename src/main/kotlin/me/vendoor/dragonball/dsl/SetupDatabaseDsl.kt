@@ -92,10 +92,15 @@ data class DatabaseSpecification(
 
 @DatabaseDslMarker class DatabaseSpecificationBuilder {
     private var name = ""
+    private var version = ""
     private var collections = ArrayList<CollectionSpecification>()
 
     fun name(lambda: () -> String)  {
         name = lambda()
+    }
+
+    fun version(lambda: () -> String) {
+        version = lambda()
     }
 
     fun collections(lambda: CollectionSpecificationListBuilder.() -> Unit) {
