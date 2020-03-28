@@ -6,7 +6,7 @@ It can be best understood using an example:
 
 ~~~~Kotlin
 database {
-    name { config.getString("database.name") }
+    name { "BestDatabaseEver" }
 
     collections {
         collection {
@@ -36,7 +36,7 @@ database {
                             "timestamp": 1
                         }
                     """.trimIndent() }
-                    
+
                     options {
                         // You have access to the fields of the IndexOptions class.
                         unique(true)
