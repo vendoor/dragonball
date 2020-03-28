@@ -87,6 +87,7 @@ data class CollectionSpecification(
 
 data class DatabaseSpecification(
         var name: String,
+        var version: String,
         var collections: List<CollectionSpecification>
 )
 
@@ -109,7 +110,7 @@ data class DatabaseSpecification(
         collections = builder.apply(lambda).build()
     }
 
-    fun build() = DatabaseSpecification(name, collections);
+    fun build() = DatabaseSpecification(name, version, collections);
 }
 
 fun database(lambda: DatabaseSpecificationBuilder.() -> Unit): DatabaseSpecification {
