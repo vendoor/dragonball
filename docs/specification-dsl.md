@@ -15,10 +15,11 @@ database {
 
         collection {
             name { "CappedCollection" }
+
             options {
                 // You have access to the fields of the CreateCollectionOptions class.
                 capped(true)
-                sizeInBytes(config.getLong("explore.recentlyPushedProjects.collectionSizeInBytes"))
+                sizeInBytes(1024)
             }
         }
 
@@ -28,12 +29,14 @@ database {
             indexes {
                 index {
                     name { "SomeIndex" },
+
                     // Will be converted to BSON.
                     fields { """
                         {
                             "timestamp": 1
                         }
                     """.trimIndent() }
+                    
                     options {
                         // You have access to the fields of the IndexOptions class.
                         unique(true)
