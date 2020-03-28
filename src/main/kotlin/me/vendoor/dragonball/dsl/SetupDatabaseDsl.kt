@@ -3,7 +3,13 @@ package me.vendoor.dragonball.dsl
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
 import org.bson.BsonDocument
+import org.bson.BsonInt32
 import org.bson.conversions.Bson
+
+enum class IndexSort(val intValue: Int) {
+    ASCENDING(1),
+    DESCENDING(-1)
+}
 
 @DslMarker annotation class DatabaseDslMarker
 
@@ -22,8 +28,13 @@ data class IndexSpecification(
         name = lambda()
     }
 
-    fun fields(lambda: () -> String) {
-        fields = BsonDocument.parse(lambda())
+    fun fields(lambda: FieldCollector.() -> Unit) {
+        val fieldMap: MutableMap<String, IndexSort> = HashMap()
+        val fieldCollector = FieldCollector(fieldMap)
+
+        lambda(fieldCollector)
+
+        fields = mapToIndexFields(fieldMap)
     }
 
     fun options(lambda: IndexOptions.() -> Unit) {
@@ -31,6 +42,22 @@ data class IndexSpecification(
     }
 
     fun build() = IndexSpecification(name, fields, options)
+
+    private fun mapToIndexFields(fields: MutableMap<String, IndexSort> = HashMap()): BsonDocument {
+        val result = BsonDocument()
+
+        fields.forEach { (name, sort) ->
+            result[name] = BsonInt32(sort.intValue)
+        }
+
+        return result
+    }
+
+    class FieldCollector(private val fields: MutableMap<String, IndexSort> = HashMap()) {
+        fun field(name: String, sort: IndexSort) {
+            fields[name] = sort
+        }
+    }
 }
 
 @DatabaseDslMarker class IndexSpecificationListBuilder {
