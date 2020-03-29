@@ -1,15 +1,11 @@
 package me.vendoor.dragonball.api.migration
 
 import com.github.zafarkhaja.semver.Version
-import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
-import com.typesafe.config.Config
 import me.vendoor.dragonball.api.configuration.Configuration
 import me.vendoor.dragonball.api.util.database.getCollectionIfExists
-import me.vendoor.dragonball.api.util.database.getDatabaseIfExists
 import org.bson.BsonDocument
 import org.bson.BsonInt32
-import org.bson.BsonString
 import java.util.NavigableMap
 import java.util.TreeMap
 import kotlin.Comparator
@@ -38,20 +34,13 @@ class MigrationPerformer(
     }
 
     private fun retrieveCurrentVersion(database: MongoDatabase): String? {
-        val migrationCollection = database.getCollectionIfExists("Migration")
+        val migrationCollection = database.getCollectionIfExists("Migration", StoredMigration::class.java)
                 ?: return null
 
         return migrationCollection.find(BsonDocument())
                 .sort(BsonDocument("timestamp", BsonInt32(-1)))
                 .first()
-                ?.get("version")
-                ?.let {
-                    if (it is BsonString) {
-                        return it.value
-                    } else {
-                        return null
-                    }
-                }
+                ?.version
     }
 
     private fun scriptListToNavigableMap(scripts: List<MigrationScript>): NavigableMap<String, MigrationScript> {
