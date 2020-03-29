@@ -2,6 +2,9 @@ package me.vendoor.dragonball.migration.api
 
 import com.github.zafarkhaja.semver.Version
 import com.mongodb.client.MongoDatabase
+import org.bson.BsonDocument
+import org.bson.BsonInt32
+import org.bson.Document
 import java.util.NavigableMap
 import java.util.TreeMap
 import kotlin.Comparator
@@ -26,7 +29,13 @@ object MigrationPerformer {
     }
 
     private fun retrieveCurrentVersion(database: MongoDatabase): String {
-        return ""
+        val migrationCollection = database.getCollection("Migration")
+
+        return migrationCollection.find(BsonDocument())
+                .sort(BsonDocument("timestamp", BsonInt32(-1)))
+                .first()
+                ?.getString("version")
+                ?: "1.0.0"
     }
 
     private class SemverComparator : Comparator<String> {
