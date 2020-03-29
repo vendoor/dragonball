@@ -1,9 +1,11 @@
 package me.vendoor.dragonball.api.migration
 
 import com.github.zafarkhaja.semver.Version
+import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
-import me.vendoor.dragonball.api.configuration.Configuration
+import me.vendoor.dragonball.api.util.database.IndexSort
 import me.vendoor.dragonball.api.util.database.getCollectionIfExists
+import me.vendoor.dragonball.api.util.time.TimeSource
 import org.bson.BsonDocument
 import org.bson.BsonInt32
 import java.util.NavigableMap
@@ -11,9 +13,19 @@ import java.util.TreeMap
 import kotlin.Comparator
 
 class MigrationPerformer(
-        private val configuration: Configuration,
         private val database: MongoDatabase
 ) {
+    companion object {
+        private const val COLLECTION_NAME = "Migration"
+        private const val INITIAL_DESCRIPTION = "New setup."
+    }
+
+    fun setupMigration(initialVersion: String) {
+        val collection = createMigrationCollection()
+
+        collection.insertOne(initialMigration(initialVersion))
+    }
+
     fun perform(targetVersion: String, scripts: List<MigrationScript>) {
         val currentVersion = retrieveCurrentVersion(database)
 
@@ -31,6 +43,24 @@ class MigrationPerformer(
         applicableScripts.forEach { (version, script) ->
             script.perform(context)
         }
+    }
+
+    private fun createMigrationCollection(): MongoCollection<StoredMigration> {
+        database.createCollection(COLLECTION_NAME)
+
+        val collection = database.getCollection(COLLECTION_NAME, StoredMigration::class.java)
+
+        collection.createIndex(BsonDocument("timestamp", BsonInt32(IndexSort.DESCENDING.intValue)))
+
+        return collection
+    }
+
+    private fun initialMigration(initialVersion: String): StoredMigration {
+        val setup = StoredMigration()
+        setup.timestamp = TimeSource.currentTimestamp()
+        setup.version = initialVersion
+        setup.description = INITIAL_DESCRIPTION
+        return setup
     }
 
     private fun retrieveCurrentVersion(database: MongoDatabase): String? {

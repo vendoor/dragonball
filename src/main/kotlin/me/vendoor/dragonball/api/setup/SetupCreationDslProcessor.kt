@@ -9,6 +9,7 @@ import me.vendoor.dragonball.api.configuration.Configuration
 import me.vendoor.dragonball.api.dsl.CreateCollectionContext
 import me.vendoor.dragonball.api.dsl.CreateDatabaseContext
 import me.vendoor.dragonball.api.dsl.CreateIndexContext
+import me.vendoor.dragonball.api.migration.MigrationPerformer
 import me.vendoor.dragonball.api.util.database.hasCollection
 import me.vendoor.dragonball.api.util.time.TimeSource
 import org.bson.BsonDocument
@@ -23,12 +24,6 @@ fun setupDatabaseFromSpecification(configuration: Configuration, client: MongoCl
 
 private class DatabaseSpecificationProcessor(val configuration: Configuration, val client: MongoClient,
                                              val context: CreateDatabaseContext) {
-    companion object {
-        private const val MIGRATION_COLLECTION_NAME = "Migration"
-        private const val MIGRATION_COLLECTION_TIMESTAMP_INDEX_NAME = "migration-timestamp-desc"
-        private const val SETUP_MIGRATION_DESCRIPTION = "New setup."
-    }
-
     fun process() {
         val database = client.getDatabase(configuration.database.name)
 
@@ -40,30 +35,9 @@ private class DatabaseSpecificationProcessor(val configuration: Configuration, v
     }
 
     private fun recordMigration(version: String, database: MongoDatabase) {
-        val options = CreateCollectionOptions()
+        val migrationPerformer = MigrationPerformer(database)
 
-        val collection = obtainCollection(MIGRATION_COLLECTION_NAME, options, database)
-
-        createMigrationIndex(collection)
-
-        collection.insertOne(versionDocument(version))
-    }
-
-    private fun createMigrationIndex(collection: MongoCollection<*>) {
-        val fields = BsonDocument("timestamp", BsonInt32(-1))
-        val options = IndexOptions()
-
-        createIndex(fields, MIGRATION_COLLECTION_TIMESTAMP_INDEX_NAME, options, collection)
-    }
-
-    private fun versionDocument(version: String): BsonDocument {
-        val document = BsonDocument()
-
-        document["timestamp"] = BsonInt64(TimeSource.currentTimestamp())
-        document["version"] = BsonString(version)
-        document["description"] = BsonString(SETUP_MIGRATION_DESCRIPTION)
-
-        return document
+        migrationPerformer.setupMigration(version)
     }
 }
 
