@@ -1,4 +1,6 @@
-package me.vendoor.dragonball.library.migration
+package me.vendoor.dragonball.schema.migration
+
+import me.vendoor.dragonball.library.migration.MigrationContext
 
 abstract class MigrationScript(
         val version: String,

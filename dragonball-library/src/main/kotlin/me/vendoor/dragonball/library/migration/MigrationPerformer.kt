@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase
 import me.vendoor.dragonball.common.database.IndexSort
 import me.vendoor.dragonball.common.database.getCollectionIfExists
 import me.vendoor.dragonball.library.util.time.TimeSource
+import me.vendoor.dragonball.schema.migration.MigrationScript
 import org.bson.BsonDocument
 import org.bson.BsonInt32
 import java.util.NavigableMap
@@ -26,7 +27,7 @@ class MigrationPerformer(
         collection.insertOne(initialMigration(initialVersion))
     }
 
-    fun perform(targetVersion: String) {
+    fun perform(targetVersion: String, scripts: List<MigrationScript>) {
         val currentVersion = retrieveCurrentVersion(database)
 
         if (currentVersion == null) {
@@ -35,7 +36,7 @@ class MigrationPerformer(
             return
         }
 
-        val navigableScripts = scriptListToNavigableMap(MigrationScriptRegistry.getRegisteredScripts())
+        val navigableScripts = scriptListToNavigableMap(scripts)
         val applicableScripts = navigableScripts.subMap(currentVersion, false, targetVersion, true)
 
         val context = MigrationContext(database)
