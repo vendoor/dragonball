@@ -26,7 +26,7 @@ class MigrationPerformer(
         collection.insertOne(initialMigration(initialVersion))
     }
 
-    fun perform(targetVersion: String, scripts: List<MigrationScript>) {
+    fun perform(targetVersion: String) {
         val currentVersion = retrieveCurrentVersion(database)
 
         if (currentVersion == null) {
@@ -35,7 +35,7 @@ class MigrationPerformer(
             return
         }
 
-        val navigableScripts = scriptListToNavigableMap(scripts)
+        val navigableScripts = scriptListToNavigableMap(MigrationScriptRegistry.getRegisteredScripts())
         val applicableScripts = navigableScripts.subMap(currentVersion, false, targetVersion, true)
 
         val context = MigrationContext(database)
@@ -43,7 +43,7 @@ class MigrationPerformer(
         applicableScripts.forEach { (version, script) ->
             println("Performing migration to $version")
 
-            script.perform(context)
+            script.migrate(context)
         }
     }
 

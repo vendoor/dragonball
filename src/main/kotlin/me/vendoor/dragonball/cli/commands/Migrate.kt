@@ -15,11 +15,11 @@ import java.io.File
 class Migrate: CliktCommand(
         help = "Migrates an initialized database."
 ) {
-    val configFile: File by option(
+    private val configFile: File by option(
             help = "Path to the configuration file."
     ).file().required()
 
-    val targetVersion: String by option(
+    private val targetVersion: String by option(
             help = "The target version of the migration"
     ).required()
 
@@ -29,7 +29,7 @@ class Migrate: CliktCommand(
         val client = obtainClient(configuration.database.connectionString)
         val database = client.getDatabase(configuration.database.name)
 
-        MigrationPerformer(database, emptyList()).perform(targetVersion)
+        MigrationPerformer(database).perform(targetVersion)
 
         client.close()
     }
@@ -37,7 +37,7 @@ class Migrate: CliktCommand(
     private fun obtainClient(connectionString: String): MongoClient {
         val settings = MongoClientSettings.builder()
                 .applyConnectionString(ConnectionString(connectionString))
-                .build();
+                .build()
 
         return MongoClients.create(settings)
     }

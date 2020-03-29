@@ -16,7 +16,7 @@ import java.io.File
 class Setup: CliktCommand(
     help = "Initializes an empty database."
 ) {
-    val configFile: File by option(
+    private val configFile: File by option(
             help = "Path to the configuration file."
     ).file().required()
 
@@ -35,7 +35,7 @@ class Setup: CliktCommand(
     private fun obtainClient(connectionString: String): MongoClient {
         val settings = MongoClientSettings.builder()
                 .applyConnectionString(ConnectionString(connectionString))
-                .build();
+                .build()
 
         return MongoClients.create(settings)
     }
