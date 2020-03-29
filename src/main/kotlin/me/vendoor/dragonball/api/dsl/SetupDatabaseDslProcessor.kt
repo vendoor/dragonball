@@ -1,13 +1,12 @@
-package me.vendoor.dragonball.dsl
+package me.vendoor.dragonball.api.dsl
 
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
-import com.mongodb.client.model.CreateIndexOptions
 import com.mongodb.client.model.IndexOptions
-import me.vendoor.dragonball.util.database.hasCollection
-import me.vendoor.dragonball.util.time.TimeSource
+import me.vendoor.dragonball.api.util.database.hasCollection
+import me.vendoor.dragonball.api.util.time.TimeSource
 import org.bson.BsonDocument
 import org.bson.BsonInt32
 import org.bson.BsonInt64

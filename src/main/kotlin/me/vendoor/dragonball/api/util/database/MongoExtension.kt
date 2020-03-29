@@ -1,9 +1,9 @@
-package me.vendoor.dragonball.util.database
+package me.vendoor.dragonball.api.util.database
 
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
-import me.vendoor.dragonball.dsl.IndexSort
+import me.vendoor.dragonball.api.dsl.IndexSort
 
 fun MongoClient.hasDatabase(name: String) =
         this.listDatabaseNames().contains(name)

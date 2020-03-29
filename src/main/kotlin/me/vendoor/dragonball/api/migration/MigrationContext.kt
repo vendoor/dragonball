@@ -1,8 +1,7 @@
-package me.vendoor.dragonball.migration.api
+package me.vendoor.dragonball.api.migration
 
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
-import me.vendoor.dragonball.dsl.CollectionSpecificationListBuilder
+import me.vendoor.dragonball.api.dsl.CollectionSpecificationListBuilder
 
 class MigrationContext(private val database: MongoDatabase) {
     fun createCollections(lambda: CollectionSpecificationListBuilder.() -> Unit) {

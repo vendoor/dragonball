@@ -1,4 +1,4 @@
-package me.vendoor.dragonball.dsl
+package me.vendoor.dragonball.api.dsl
 
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions

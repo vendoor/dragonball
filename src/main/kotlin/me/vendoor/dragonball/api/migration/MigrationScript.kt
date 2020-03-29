@@ -1,6 +1,4 @@
-package me.vendoor.dragonball.migration.api
-
-import com.mongodb.client.MongoDatabase
+package me.vendoor.dragonball.api.migration
 
 interface MigrationScript {
     fun getVersion(): String

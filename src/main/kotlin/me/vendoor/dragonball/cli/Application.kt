@@ -1,9 +1,9 @@
-package me.vendoor.dragonball
+package me.vendoor.dragonball.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
-import me.vendoor.dragonball.commands.Migrate
-import me.vendoor.dragonball.commands.Setup
+import me.vendoor.dragonball.cli.commands.Migrate
+import me.vendoor.dragonball.cli.commands.Setup
 
 class Dragonball: CliktCommand(
         help = "Command line database administration toolkit.",

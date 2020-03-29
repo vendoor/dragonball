@@ -1,4 +1,4 @@
-package me.vendoor.dragonball.util.time
+package me.vendoor.dragonball.api.util.time
 
 import java.time.Clock
 

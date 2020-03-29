@@ -1,4 +1,4 @@
-package me.vendoor.dragonball.commands
+package me.vendoor.dragonball.cli.commands
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.option
@@ -9,25 +9,26 @@ import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.typesafe.config.ConfigFactory
-import me.vendoor.dragonball.specification.vendoorDatabaseSpecification
-import me.vendoor.dragonball.dsl.setupDatabaseFromSpecification
+import me.vendoor.dragonball.api.migration.MigrationPerformer
 import java.io.File
 
-class Setup: CliktCommand(
-    help = "Initializes an empty database."
+class Migrate: CliktCommand(
+        help = "Migrates an initialized database."
 ) {
     val configFile: File by option(
             help = "Path to the configuration file."
     ).file().required()
+
+    val targetVersion: String by option(
+            help = "The target version of the migration"
+    ).required()
 
     override fun run() {
         val config = ConfigFactory.parseFile(configFile)
 
         val client = obtainClient(config.getString("database.connectionString"))
 
-        val databaseConfiguration = vendoorDatabaseSpecification(config)
-
-        setupDatabaseFromSpecification(client, databaseConfiguration)
+        MigrationPerformer.perform(config, targetVersion, client)
 
         client.close()
     }

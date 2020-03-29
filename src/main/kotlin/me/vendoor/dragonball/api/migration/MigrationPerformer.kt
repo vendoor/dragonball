@@ -1,11 +1,11 @@
-package me.vendoor.dragonball.migration.api
+package me.vendoor.dragonball.api.migration
 
 import com.github.zafarkhaja.semver.Version
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
 import com.typesafe.config.Config
-import me.vendoor.dragonball.util.database.getCollectionIfExists
-import me.vendoor.dragonball.util.database.getDatabaseIfExists
+import me.vendoor.dragonball.api.util.database.getCollectionIfExists
+import me.vendoor.dragonball.api.util.database.getDatabaseIfExists
 import org.bson.BsonDocument
 import org.bson.BsonInt32
 import org.bson.BsonString
