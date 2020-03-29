@@ -1,11 +1,13 @@
 package me.vendoor.dragonball.migration.api
 
 import com.github.zafarkhaja.semver.Version
+import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
 import org.bson.BsonDocument
 import org.bson.BsonInt32
 import org.bson.Document
 import java.util.NavigableMap
+import java.util.Objects.isNull
 import java.util.TreeMap
 import kotlin.Comparator
 
@@ -16,7 +18,13 @@ object MigrationPerformer {
         scripts[script.getVersion()] = script;
     }
 
-    fun perform(targetVersion: String, database: MongoDatabase) {
+    fun perform(targetVersion: String, client: MongoClient) {
+        var database = openDatabase(client)
+
+        if (isNull(database)) {
+            // setup
+        }
+
         val currentVersion = retrieveCurrentVersion(database)
 
         val applicableMap = scripts.subMap(currentVersion, false, targetVersion, true)
@@ -26,6 +34,10 @@ object MigrationPerformer {
         applicableMap.forEach { (version, script) ->
             script.perform(context)
         }
+    }
+
+    private fun openDatabase(client: MongoClient): MongoDatabase? {
+        return null;
     }
 
     private fun retrieveCurrentVersion(database: MongoDatabase): String {

@@ -11,6 +11,7 @@ import com.mongodb.client.MongoClients
 import com.typesafe.config.ConfigFactory
 import me.vendoor.dragonball.specification.vendoorDatabaseSpecification
 import me.vendoor.dragonball.dsl.setupDatabaseFromSpecification
+import me.vendoor.dragonball.migration.api.MigrationPerformer
 import java.io.File
 
 class Migrate: CliktCommand(
@@ -28,6 +29,8 @@ class Migrate: CliktCommand(
         val config = ConfigFactory.parseFile(configFile)
 
         val client = obtainClient(config.getString("database.connectionString"))
+
+        MigrationPerformer.perform(targetVersion, client)
 
         client.close()
     }
