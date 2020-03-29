@@ -6,5 +6,6 @@ class Configuration {
 
     class Database {
         lateinit var connectionString: String
+        lateinit var name: String
     }
 }

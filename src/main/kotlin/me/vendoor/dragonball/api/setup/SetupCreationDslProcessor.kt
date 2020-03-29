@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
+import me.vendoor.dragonball.api.configuration.Configuration
 import me.vendoor.dragonball.api.dsl.CreateCollectionContext
 import me.vendoor.dragonball.api.dsl.CreateDatabaseContext
 import me.vendoor.dragonball.api.dsl.CreateIndexContext
@@ -17,10 +18,11 @@ import org.bson.BsonString
 import org.bson.conversions.Bson
 import java.lang.Exception
 
-fun setupDatabaseFromSpecification(client: MongoClient, context: CreateDatabaseContext) =
-    DatabaseSpecificationProcessor(client, context).process()
+fun setupDatabaseFromSpecification(configuration: Configuration, client: MongoClient, context: CreateDatabaseContext) =
+    DatabaseSpecificationProcessor(configuration, client, context).process()
 
-private class DatabaseSpecificationProcessor(val client: MongoClient, val context: CreateDatabaseContext) {
+private class DatabaseSpecificationProcessor(val configuration: Configuration, val client: MongoClient,
+                                             val context: CreateDatabaseContext) {
     companion object {
         private const val MIGRATION_COLLECTION_NAME = "Migration"
         private const val MIGRATION_COLLECTION_TIMESTAMP_INDEX_NAME = "migration-timestamp-desc"
@@ -28,7 +30,7 @@ private class DatabaseSpecificationProcessor(val client: MongoClient, val contex
     }
 
     fun process() {
-        val database = obtainDatabase()
+        val database = client.getDatabase(configuration.database.name)
 
         context.collections.forEach { collection ->
             CollectionSpecificationProcessor(database, collection).process()
@@ -36,8 +38,6 @@ private class DatabaseSpecificationProcessor(val client: MongoClient, val contex
 
         recordMigration(context.version, database)
     }
-
-    private fun obtainDatabase() = client.getDatabase(context.name)
 
     private fun recordMigration(version: String, database: MongoDatabase) {
         val options = CreateCollectionOptions()
@@ -57,7 +57,7 @@ private class DatabaseSpecificationProcessor(val client: MongoClient, val contex
     }
 
     private fun versionDocument(version: String): BsonDocument {
-        val document = BsonDocument();
+        val document = BsonDocument()
 
         document["timestamp"] = BsonInt64(TimeSource.currentTimestamp())
         document["version"] = BsonString(version)
@@ -69,7 +69,7 @@ private class DatabaseSpecificationProcessor(val client: MongoClient, val contex
 
 private class CollectionSpecificationProcessor(val database: MongoDatabase, val context: CreateCollectionContext) {
     fun process() {
-        val collection = obtainCollection(context.name, context.options, database);
+        val collection = obtainCollection(context.name, context.options, database)
 
         context.indexes.forEach { index ->
             IndexSpecificationProcessor(collection, index).process()
@@ -86,7 +86,7 @@ private class IndexSpecificationProcessor(val collection: MongoCollection<BsonDo
 private fun createIndex(fields: Bson, name: String, options: IndexOptions, collection: MongoCollection<*>) {
     try {
         // TODO: Use collection.hasIndexOnFields()
-        collection.createIndex(fields, options.name(name));
+        collection.createIndex(fields, options.name(name))
 
         println("Created index: ${name}")
     } catch (e: Exception) {

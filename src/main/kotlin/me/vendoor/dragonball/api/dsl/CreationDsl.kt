@@ -109,19 +109,13 @@ data class CreateCollectionContext(
 }
 
 data class CreateDatabaseContext(
-        var name: String,
         var version: String,
         var collections: List<CreateCollectionContext>
 )
 
 @DatabaseDslMarker class CreateDatabaseContextBuilder {
-    private var name = ""
     private var version = ""
     private var collections = ArrayList<CreateCollectionContext>()
-
-    fun name(lambda: () -> String)  {
-        name = lambda()
-    }
 
     fun version(lambda: () -> String) {
         version = lambda()
@@ -133,7 +127,7 @@ data class CreateDatabaseContext(
         collections = builder.apply(lambda).build()
     }
 
-    fun build() = CreateDatabaseContext(name, version, collections);
+    fun build() = CreateDatabaseContext(version, collections)
 }
 
 fun database(lambda: CreateDatabaseContextBuilder.() -> Unit): CreateDatabaseContext {

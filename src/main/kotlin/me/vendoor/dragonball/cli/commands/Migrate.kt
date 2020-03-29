@@ -10,6 +10,7 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.typesafe.config.ConfigFactory
 import me.vendoor.dragonball.api.migration.MigrationPerformer
+import me.vendoor.dragonball.cli.util.loadConfigurationFrom
 import java.io.File
 
 class Migrate: CliktCommand(
@@ -24,11 +25,12 @@ class Migrate: CliktCommand(
     ).required()
 
     override fun run() {
-        val config = ConfigFactory.parseFile(configFile)
+        val configuration = loadConfigurationFrom(configFile)
 
-        val client = obtainClient(config.getString("database.connectionString"))
+        val client = obtainClient(configuration.database.connectionString)
+        val database = client.getDatabase(configuration.database.name)
 
-        MigrationPerformer.perform(config, targetVersion, client)
+        val performer = MigrationPerformer(configuration, database)
 
         client.close()
     }
