@@ -100,7 +100,7 @@ class CreateCollectionContextBuilder {
 }
 
 @UpsertDslMarker
-class CreateCollectionSpecificationContextBuilder {
+class CreateCollectionListContextBuilder {
     private var collections = ArrayList<CreateCollectionContext>()
 
     fun collection(lambda: CreateCollectionContextBuilder.() -> Unit) {
@@ -126,8 +126,8 @@ class CreateDatabaseContextBuilder {
         version = lambda()
     }
 
-    fun collections(lambda: CreateCollectionSpecificationContextBuilder.() -> Unit) {
-        val builder = CreateCollectionSpecificationContextBuilder()
+    fun collections(lambda: CreateCollectionListContextBuilder.() -> Unit) {
+        val builder = CreateCollectionListContextBuilder()
 
         collections = builder.apply(lambda).build()
     }

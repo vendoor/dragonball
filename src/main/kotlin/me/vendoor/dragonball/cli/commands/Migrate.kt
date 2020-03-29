@@ -8,7 +8,6 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
-import com.typesafe.config.ConfigFactory
 import me.vendoor.dragonball.api.migration.MigrationPerformer
 import me.vendoor.dragonball.cli.util.loadConfigurationFrom
 import java.io.File
