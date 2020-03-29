@@ -1,7 +1,6 @@
 package me.vendoor.dragonball.library.migration
 
 import com.github.zafarkhaja.semver.Version
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import me.vendoor.dragonball.common.database.IndexSort
 import me.vendoor.dragonball.common.database.getCollectionIfExists
@@ -22,9 +21,9 @@ class MigrationPerformer(
     }
 
     fun setupMigration(initialVersion: String) {
-        val collection = createMigrationCollection()
+        createMigrationCollection()
 
-        collection.insertOne(initialMigration(initialVersion))
+        recordMigration(initialVersion, INITIAL_DESCRIPTION)
     }
 
     fun perform(targetVersion: String, scripts: List<MigrationScript>) {
@@ -45,25 +44,17 @@ class MigrationPerformer(
             println("Performing migration to $version")
 
             script.migrate(context)
+
+            recordMigration(script.version, script.description)
         }
     }
 
-    private fun createMigrationCollection(): MongoCollection<StoredMigration> {
+    private fun createMigrationCollection() {
         database.createCollection(COLLECTION_NAME)
 
         val collection = database.getCollection(COLLECTION_NAME, StoredMigration::class.java)
 
         collection.createIndex(BsonDocument("timestamp", BsonInt32(IndexSort.DESCENDING.intValue)))
-
-        return collection
-    }
-
-    private fun initialMigration(initialVersion: String): StoredMigration {
-        val setup = StoredMigration()
-        setup.timestamp = TimeSource.currentTimestamp()
-        setup.version = initialVersion
-        setup.description = INITIAL_DESCRIPTION
-        return setup
     }
 
     private fun retrieveCurrentVersion(database: MongoDatabase): String? {
@@ -84,6 +75,18 @@ class MigrationPerformer(
         }
 
         return result
+    }
+
+
+    private fun recordMigration(version: String, description: String) {
+        val collection = database.getCollection(COLLECTION_NAME, StoredMigration::class.java)
+
+        val setup = StoredMigration()
+        setup.timestamp = TimeSource.currentTimestamp()
+        setup.version = version
+        setup.description = description
+
+        collection.insertOne(setup)
     }
 
     private class SemverComparator : Comparator<String> {
