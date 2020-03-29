@@ -6,16 +6,12 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
 import me.vendoor.dragonball.api.configuration.Configuration
-import me.vendoor.dragonball.api.dsl.CreateCollectionContext
-import me.vendoor.dragonball.api.dsl.CreateDatabaseContext
-import me.vendoor.dragonball.api.dsl.CreateIndexContext
+import me.vendoor.dragonball.api.dsl.creation.CreateCollectionContext
+import me.vendoor.dragonball.api.dsl.creation.CreateDatabaseContext
+import me.vendoor.dragonball.api.dsl.creation.CreateIndexContext
 import me.vendoor.dragonball.api.migration.MigrationPerformer
 import me.vendoor.dragonball.api.util.database.hasCollection
-import me.vendoor.dragonball.api.util.time.TimeSource
 import org.bson.BsonDocument
-import org.bson.BsonInt32
-import org.bson.BsonInt64
-import org.bson.BsonString
 import org.bson.conversions.Bson
 import java.lang.Exception
 

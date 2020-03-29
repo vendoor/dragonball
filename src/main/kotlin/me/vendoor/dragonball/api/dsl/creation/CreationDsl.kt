@@ -1,4 +1,4 @@
-package me.vendoor.dragonball.api.dsl
+package me.vendoor.dragonball.api.dsl.creation
 
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
@@ -7,7 +7,7 @@ import org.bson.BsonDocument
 import org.bson.BsonInt32
 import org.bson.conversions.Bson
 
-@DslMarker annotation class DatabaseDslMarker
+@DslMarker annotation class CreateDslMarker
 
 data class CreateIndexContext(
         var name: String,
@@ -15,7 +15,8 @@ data class CreateIndexContext(
         var options: IndexOptions
 )
 
-@DatabaseDslMarker class CreateIndexContextBuilder {
+@CreateDslMarker
+class CreateIndexContextBuilder {
     private var name = ""
     private var fields  = BsonDocument()
     private var options = IndexOptions()
@@ -56,7 +57,8 @@ data class CreateIndexContext(
     }
 }
 
-@DatabaseDslMarker class CreateIndexContextListBuilder {
+@CreateDslMarker
+class CreateIndexContextListBuilder {
     private var indexes = ArrayList<CreateIndexContext>()
 
     fun index(lambda: CreateIndexContextBuilder.() -> Unit) {
@@ -74,7 +76,8 @@ data class CreateCollectionContext(
         var options: CreateCollectionOptions
 )
 
-@DatabaseDslMarker class CreateCollectionContextBuilder {
+@CreateDslMarker
+class CreateCollectionContextBuilder {
     private var name = ""
     private var indexes = ArrayList<CreateIndexContext>()
     private var options = CreateCollectionOptions()
@@ -96,7 +99,8 @@ data class CreateCollectionContext(
     fun build() = CreateCollectionContext(name, indexes, options)
 }
 
-@DatabaseDslMarker class CreateCollectionSpecificationContextBuilder {
+@CreateDslMarker
+class CreateCollectionSpecificationContextBuilder {
     private var collections = ArrayList<CreateCollectionContext>()
 
     fun collection(lambda: CreateCollectionContextBuilder.() -> Unit) {
@@ -113,7 +117,8 @@ data class CreateDatabaseContext(
         var collections: List<CreateCollectionContext>
 )
 
-@DatabaseDslMarker class CreateDatabaseContextBuilder {
+@CreateDslMarker
+class CreateDatabaseContextBuilder {
     private var version = ""
     private var collections = ArrayList<CreateCollectionContext>()
 
