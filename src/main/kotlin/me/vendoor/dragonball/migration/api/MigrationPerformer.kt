@@ -3,11 +3,13 @@ package me.vendoor.dragonball.migration.api
 import com.github.zafarkhaja.semver.Version
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
+import com.typesafe.config.Config
+import me.vendoor.dragonball.util.database.getCollectionIfExists
+import me.vendoor.dragonball.util.database.getDatabaseIfExists
 import org.bson.BsonDocument
 import org.bson.BsonInt32
-import org.bson.Document
+import org.bson.BsonString
 import java.util.NavigableMap
-import java.util.Objects.isNull
 import java.util.TreeMap
 import kotlin.Comparator
 
@@ -18,14 +20,20 @@ object MigrationPerformer {
         scripts[script.getVersion()] = script;
     }
 
-    fun perform(targetVersion: String, client: MongoClient) {
-        var database = openDatabase(client)
+    fun perform(config: Config, targetVersion: String, client: MongoClient) {
+        val database = client.getDatabaseIfExists(config.getString("database.name"))
 
-        if (isNull(database)) {
-            // setup
+        if (database == null) {
+            println("Database does not exist, please first create it using setup!")
+            return
         }
 
         val currentVersion = retrieveCurrentVersion(database)
+
+        if (currentVersion == null) {
+            println("Could not read the actual database version!")
+            return
+        }
 
         val applicableMap = scripts.subMap(currentVersion, false, targetVersion, true)
 
@@ -36,18 +44,21 @@ object MigrationPerformer {
         }
     }
 
-    private fun openDatabase(client: MongoClient): MongoDatabase? {
-        return null;
-    }
-
-    private fun retrieveCurrentVersion(database: MongoDatabase): String {
-        val migrationCollection = database.getCollection("Migration")
+    private fun retrieveCurrentVersion(database: MongoDatabase): String? {
+        val migrationCollection = database.getCollectionIfExists("Migration")
+                ?: return null
 
         return migrationCollection.find(BsonDocument())
                 .sort(BsonDocument("timestamp", BsonInt32(-1)))
                 .first()
-                ?.getString("version")
-                ?: "1.0.0"
+                ?.get("version")
+                ?.let {
+                    if (it is BsonString) {
+                        return it.value
+                    } else {
+                        return null
+                    }
+                }
     }
 
     private class SemverComparator : Comparator<String> {

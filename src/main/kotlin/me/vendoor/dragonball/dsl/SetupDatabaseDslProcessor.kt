@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.CreateIndexOptions
 import com.mongodb.client.model.IndexOptions
+import me.vendoor.dragonball.util.database.hasCollection
 import me.vendoor.dragonball.util.time.TimeSource
 import org.bson.BsonDocument
 import org.bson.BsonInt32
@@ -76,19 +77,13 @@ private class CollectionSpecificationProcessor(val database: MongoDatabase, val 
 
 private class IndexSpecificationProcessor(val collection: MongoCollection<BsonDocument>, val specification: IndexSpecification) {
     fun process() {
-        createIndex(specification.fields, specification.name, specification.options, collection);
-        try {
-            collection.createIndex(specification.fields, specification.options.name(specification.name))
-
-            println("Created index: ${specification.name}")
-        } catch (e: Exception) {
-            // No-op, index already exists.
-        }
+        createIndex(specification.fields, specification.name, specification.options, collection)
     }
 }
 
 private fun createIndex(fields: Bson, name: String, options: IndexOptions, collection: MongoCollection<*>) {
     try {
+        // TODO: Use collection.hasIndexOnFields()
         collection.createIndex(fields, options.name(name));
 
         println("Created index: ${name}")
@@ -98,7 +93,7 @@ private fun createIndex(fields: Bson, name: String, options: IndexOptions, colle
 }
 
 private fun obtainCollection(name: String, options: CreateCollectionOptions, database: MongoDatabase): MongoCollection<BsonDocument> {
-    if (isCollectionMissing(name, database)) {
+    if (!database.hasCollection(name)) {
         database.createCollection(name, options)
 
         println("Created collection: ${name}")
@@ -106,6 +101,3 @@ private fun obtainCollection(name: String, options: CreateCollectionOptions, dat
 
     return database.getCollection(name, BsonDocument::class.java)
 }
-
-private fun isCollectionMissing(name: String, database: MongoDatabase) = !database.listCollectionNames()
-        .any { actualName -> actualName == name }
