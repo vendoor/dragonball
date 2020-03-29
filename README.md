@@ -10,11 +10,6 @@ Assuming, you have a JDK installed, Dragonball can be built using maven:
 ./mvnw clean package
 ~~~~
 
-This creates the following JARs:
-
-  * `target/dragonball-{version}.jar`
-  * `target/dragonball-latest.jar`
-
 ## Configuration
 
 Dragonball commands make use of a configuration file (in HOCON format). An example configuration file is provided at [config/vendoor.conf](config/vendoor.conf). This file holds shared settings such as database connection strings, database names and such.
@@ -25,17 +20,28 @@ Dragonball commands make use of a configuration file (in HOCON format). An examp
 
 Initializes an empty database.
 
-The database specification (collections, indexes, etc.) can be found in [VendoorDatabaseSpecification.kt](src/main/kotlin/me/vendoor/dragonball/specification/VendoorDatabaseSpecification.kt). Modify this file if you want to configure the way the database is initialized (for example, a new collection should be created). For a primer on the specification DSL, please refer to [Specification DSL](docs/specification-dsl.md).
+For a primer on the specification DSL, please refer to [Specification DSL](docs/specification-dsl.md).
 
 ~~~~
-java -jar target/dragonball-latest.jar setup --config-file=./config/vendoor.conf
+java -jar .\dragonball-cli\target\dragonball-cli-1.0.0.jar setup \
+  --config-file=./config/vendoor.conf \
+  --schema-jar=../schema/target/schema-1.0.0.jar \
+  --schema-class="me.vendoor.schema.Schema" --target-version="1.1.0"
 ~~~~
 
 ### Migrate
 
 Performs a database migration between the specified versions.
 
-This command is not implemented yet :(
+For a primer on the migration DSL, please refer to [Migration DSL](docs/migration-dsl.md).
+
+~~~~
+java -jar .\dragonball-cli\target\dragonball-cli-1.0.0.jar migrate \
+  --config-file=./config/vendoor.conf \
+  --target-version="1.1.0" \
+  --schema-jar=../schema/target/schema-1.0.0.jar \
+  --schema-class="me.vendoor.schema.Schema"
+~~~~
 
 ## Notes on Specification, Migration and Versioning
 
