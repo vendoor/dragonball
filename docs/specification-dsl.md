@@ -30,12 +30,9 @@ database {
                 index {
                     name { "SomeIndex" },
 
-                    // Will be converted to BSON.
-                    fields { """
-                        {
-                            "timestamp": 1
-                        }
-                    """.trimIndent() }
+                    fields {
+                        field("timestamp", IndexSort.DESCENDING)
+                    }
 
                     options {
                         // You have access to the fields of the IndexOptions class.
