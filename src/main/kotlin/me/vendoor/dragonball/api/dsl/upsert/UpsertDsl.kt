@@ -1,4 +1,4 @@
-package me.vendoor.dragonball.api.dsl.creation
+package me.vendoor.dragonball.api.dsl.upsert
 
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
@@ -7,7 +7,7 @@ import org.bson.BsonDocument
 import org.bson.BsonInt32
 import org.bson.conversions.Bson
 
-@DslMarker annotation class CreateDslMarker
+@DslMarker annotation class UpsertDslMarker
 
 data class CreateIndexContext(
         var name: String,
@@ -15,7 +15,7 @@ data class CreateIndexContext(
         var options: IndexOptions
 )
 
-@CreateDslMarker
+@UpsertDslMarker
 class CreateIndexContextBuilder {
     private var name = ""
     private var fields  = BsonDocument()
@@ -57,7 +57,7 @@ class CreateIndexContextBuilder {
     }
 }
 
-@CreateDslMarker
+@UpsertDslMarker
 class CreateIndexContextListBuilder {
     private var indexes = ArrayList<CreateIndexContext>()
 
@@ -76,7 +76,7 @@ data class CreateCollectionContext(
         var options: CreateCollectionOptions
 )
 
-@CreateDslMarker
+@UpsertDslMarker
 class CreateCollectionContextBuilder {
     private var name = ""
     private var indexes = ArrayList<CreateIndexContext>()
@@ -99,7 +99,7 @@ class CreateCollectionContextBuilder {
     fun build() = CreateCollectionContext(name, indexes, options)
 }
 
-@CreateDslMarker
+@UpsertDslMarker
 class CreateCollectionSpecificationContextBuilder {
     private var collections = ArrayList<CreateCollectionContext>()
 
@@ -117,7 +117,7 @@ data class CreateDatabaseContext(
         var collections: List<CreateCollectionContext>
 )
 
-@CreateDslMarker
+@UpsertDslMarker
 class CreateDatabaseContextBuilder {
     private var version = ""
     private var collections = ArrayList<CreateCollectionContext>()
