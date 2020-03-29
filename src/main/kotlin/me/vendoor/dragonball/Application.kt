@@ -2,6 +2,7 @@ package me.vendoor.dragonball
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
+import me.vendoor.dragonball.commands.Migrate
 import me.vendoor.dragonball.commands.Setup
 
 class Dragonball: CliktCommand(
@@ -12,5 +13,5 @@ class Dragonball: CliktCommand(
 }
 
 fun main(args: Array<String>) = Dragonball()
-        .subcommands(Setup())
+        .subcommands(Migrate(), Setup())
         .main(args)
