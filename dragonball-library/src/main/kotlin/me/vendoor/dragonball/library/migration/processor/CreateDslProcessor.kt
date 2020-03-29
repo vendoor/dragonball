@@ -2,8 +2,8 @@ package me.vendoor.dragonball.library.migration.processor
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
-import me.vendoor.dragonball.dsl.upsert.CreateCollectionContext
-import me.vendoor.dragonball.dsl.upsert.CreateIndexContext
+import me.vendoor.dragonball.library.schema.dsl.upsert.CreateCollectionContext
+import me.vendoor.dragonball.library.schema.dsl.upsert.CreateIndexContext
 import org.bson.Document
 
 class CreateCollectionListContextProcessor(private val database: MongoDatabase,

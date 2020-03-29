@@ -6,7 +6,7 @@ import com.mongodb.client.MongoDatabase
 import me.vendoor.dragonball.common.database.IndexSort
 import me.vendoor.dragonball.common.database.getCollectionIfExists
 import me.vendoor.dragonball.library.util.time.TimeSource
-import me.vendoor.dragonball.schema.migration.MigrationScript
+import me.vendoor.dragonball.library.schema.migration.MigrationScript
 import org.bson.BsonDocument
 import org.bson.BsonInt32
 import java.util.NavigableMap

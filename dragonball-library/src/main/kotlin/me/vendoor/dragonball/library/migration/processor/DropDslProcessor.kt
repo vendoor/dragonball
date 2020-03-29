@@ -1,7 +1,8 @@
 package me.vendoor.dragonball.library.migration.processor
 
 import com.mongodb.client.MongoDatabase
-import me.vendoor.dragonball.dsl.drop.DropContext
+import me.vendoor.dragonball.common.database.getCollectionIfExists
+import me.vendoor.dragonball.library.schema.dsl.drop.DropContext
 
 class DropContextProcessor(private val database: MongoDatabase,
                            private val context: DropContext) {

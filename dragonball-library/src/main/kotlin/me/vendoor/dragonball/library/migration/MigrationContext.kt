@@ -3,8 +3,8 @@ package me.vendoor.dragonball.library.migration
 import com.mongodb.client.MongoDatabase
 import me.vendoor.dragonball.library.migration.processor.CreateCollectionListContextProcessor
 import me.vendoor.dragonball.library.migration.processor.DropContextProcessor
-import me.vendoor.dragonball.schema.dsl.drop.DropContextBuilder
-import me.vendoor.dragonball.schema.dsl.upsert.CreateCollectionListContextBuilder
+import me.vendoor.dragonball.library.schema.dsl.drop.DropContextBuilder
+import me.vendoor.dragonball.library.schema.dsl.upsert.CreateCollectionListContextBuilder
 
 class MigrationContext(private val database: MongoDatabase) {
     fun create(lambda: CreateCollectionListContextBuilder.() -> Unit) {

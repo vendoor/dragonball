@@ -1,4 +1,4 @@
-package me.vendoor.dragonball.schema.dsl.drop
+package me.vendoor.dragonball.library.schema.dsl.drop
 
 @DslMarker annotation class DropDslMarker
 

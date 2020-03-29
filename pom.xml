@@ -48,7 +48,6 @@
         <module>dragonball-cli</module>
         <module>dragonball-common</module>
         <module>dragonball-library</module>
-        <module>dragonball-schema</module>
     </modules>
 
     <dependencyManagement>

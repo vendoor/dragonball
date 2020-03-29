@@ -6,9 +6,9 @@ import com.mongodb.client.MongoDatabase
 import me.vendoor.dragonball.common.database.hasDatabase
 import me.vendoor.dragonball.library.configuration.Configuration
 import me.vendoor.dragonball.library.migration.MigrationPerformer
-import me.vendoor.dragonball.schema.dsl.upsert.CreateCollectionContext
-import me.vendoor.dragonball.schema.dsl.upsert.CreateDatabaseContext
-import me.vendoor.dragonball.schema.dsl.upsert.CreateIndexContext
+import me.vendoor.dragonball.library.schema.dsl.upsert.CreateCollectionContext
+import me.vendoor.dragonball.library.schema.dsl.upsert.CreateDatabaseContext
+import me.vendoor.dragonball.library.schema.dsl.upsert.CreateIndexContext
 import org.bson.Document
 
 class DatabaseSpecificationProcessor(private val configuration: Configuration,

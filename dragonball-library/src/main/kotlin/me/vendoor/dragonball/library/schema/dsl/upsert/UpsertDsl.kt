@@ -1,4 +1,4 @@
-package me.vendoor.dragonball.schema.dsl.upsert
+package me.vendoor.dragonball.library.schema.dsl.upsert
 
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions

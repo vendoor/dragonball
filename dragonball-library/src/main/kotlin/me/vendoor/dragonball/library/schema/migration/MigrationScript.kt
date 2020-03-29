@@ -1,4 +1,4 @@
-package me.vendoor.dragonball.schema.migration
+package me.vendoor.dragonball.library.schema.migration
 
 import me.vendoor.dragonball.library.migration.MigrationContext
 
