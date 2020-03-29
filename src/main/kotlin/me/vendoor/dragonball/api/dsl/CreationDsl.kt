@@ -2,24 +2,20 @@ package me.vendoor.dragonball.api.dsl
 
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
+import me.vendoor.dragonball.api.util.database.IndexSort
 import org.bson.BsonDocument
 import org.bson.BsonInt32
 import org.bson.conversions.Bson
 
-enum class IndexSort(val intValue: Int) {
-    ASCENDING(1),
-    DESCENDING(-1)
-}
-
 @DslMarker annotation class DatabaseDslMarker
 
-data class IndexSpecification(
+data class CreateIndexContext(
         var name: String,
         var fields: Bson,
         var options: IndexOptions
 )
 
-@DatabaseDslMarker class IndexSpecificationBuilder {
+@DatabaseDslMarker class CreateIndexContextBuilder {
     private var name = ""
     private var fields  = BsonDocument()
     private var options = IndexOptions()
@@ -41,7 +37,7 @@ data class IndexSpecification(
         options = options.apply(lambda)
     }
 
-    fun build() = IndexSpecification(name, fields, options)
+    fun build() = CreateIndexContext(name, fields, options)
 
     private fun mapToIndexFields(fields: MutableMap<String, IndexSort> = HashMap()): BsonDocument {
         val result = BsonDocument()
@@ -60,11 +56,11 @@ data class IndexSpecification(
     }
 }
 
-@DatabaseDslMarker class IndexSpecificationListBuilder {
-    private var indexes = ArrayList<IndexSpecification>()
+@DatabaseDslMarker class CreateIndexContextListBuilder {
+    private var indexes = ArrayList<CreateIndexContext>()
 
-    fun index(lambda: IndexSpecificationBuilder.() -> Unit) {
-        val builder = IndexSpecificationBuilder()
+    fun index(lambda: CreateIndexContextBuilder.() -> Unit) {
+        val builder = CreateIndexContextBuilder()
 
         indexes.add(builder.apply(lambda).build())
     }
@@ -72,23 +68,23 @@ data class IndexSpecification(
     fun build() = indexes
 }
 
-data class CollectionSpecification(
+data class CreateCollectionContext(
         var name: String,
-        var indexes: List<IndexSpecification>,
+        var indexes: List<CreateIndexContext>,
         var options: CreateCollectionOptions
 )
 
-@DatabaseDslMarker class CollectionSpecificationBuilder {
+@DatabaseDslMarker class CreateCollectionContextBuilder {
     private var name = ""
-    private var indexes = ArrayList<IndexSpecification>()
+    private var indexes = ArrayList<CreateIndexContext>()
     private var options = CreateCollectionOptions()
 
     fun name(lambda: () -> String)  {
         name = lambda()
     }
 
-    fun indexes(lambda: IndexSpecificationListBuilder.() -> Unit) {
-        val builder = IndexSpecificationListBuilder()
+    fun indexes(lambda: CreateIndexContextListBuilder.() -> Unit) {
+        val builder = CreateIndexContextListBuilder()
 
         indexes = builder.apply(lambda).build()
     }
@@ -97,14 +93,14 @@ data class CollectionSpecification(
         options = options.apply(lambda)
     }
 
-    fun build() = CollectionSpecification(name, indexes, options)
+    fun build() = CreateCollectionContext(name, indexes, options)
 }
 
-@DatabaseDslMarker class CollectionSpecificationListBuilder {
-    private var collections = ArrayList<CollectionSpecification>()
+@DatabaseDslMarker class CreateCollectionSpecificationContextBuilder {
+    private var collections = ArrayList<CreateCollectionContext>()
 
-    fun collection(lambda: CollectionSpecificationBuilder.() -> Unit) {
-        val builder = CollectionSpecificationBuilder()
+    fun collection(lambda: CreateCollectionContextBuilder.() -> Unit) {
+        val builder = CreateCollectionContextBuilder()
 
         collections.add(builder.apply(lambda).build())
     }
@@ -112,16 +108,16 @@ data class CollectionSpecification(
     fun build() = collections
 }
 
-data class DatabaseSpecification(
+data class CreateDatabaseContext(
         var name: String,
         var version: String,
-        var collections: List<CollectionSpecification>
+        var collections: List<CreateCollectionContext>
 )
 
-@DatabaseDslMarker class DatabaseSpecificationBuilder {
+@DatabaseDslMarker class CreateDatabaseContextBuilder {
     private var name = ""
     private var version = ""
-    private var collections = ArrayList<CollectionSpecification>()
+    private var collections = ArrayList<CreateCollectionContext>()
 
     fun name(lambda: () -> String)  {
         name = lambda()
@@ -131,17 +127,17 @@ data class DatabaseSpecification(
         version = lambda()
     }
 
-    fun collections(lambda: CollectionSpecificationListBuilder.() -> Unit) {
-        val builder = CollectionSpecificationListBuilder()
+    fun collections(lambda: CreateCollectionSpecificationContextBuilder.() -> Unit) {
+        val builder = CreateCollectionSpecificationContextBuilder()
 
         collections = builder.apply(lambda).build()
     }
 
-    fun build() = DatabaseSpecification(name, version, collections);
+    fun build() = CreateDatabaseContext(name, version, collections);
 }
 
-fun database(lambda: DatabaseSpecificationBuilder.() -> Unit): DatabaseSpecification {
-    val builder = DatabaseSpecificationBuilder()
+fun database(lambda: CreateDatabaseContextBuilder.() -> Unit): CreateDatabaseContext {
+    val builder = CreateDatabaseContextBuilder()
 
     return builder.apply(lambda).build()
 }

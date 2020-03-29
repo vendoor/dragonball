@@ -8,9 +8,12 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
+import com.typesafe.config.ConfigBeanFactory
 import com.typesafe.config.ConfigFactory
+import me.vendoor.dragonball.api.configuration.Configuration
 import me.vendoor.dragonball.specification.vendoorDatabaseSpecification
-import me.vendoor.dragonball.api.dsl.setupDatabaseFromSpecification
+import me.vendoor.dragonball.api.setup.setupDatabaseFromSpecification
+import me.vendoor.dragonball.cli.util.loadConfigurationFrom
 import java.io.File
 
 class Setup: CliktCommand(
@@ -21,13 +24,13 @@ class Setup: CliktCommand(
     ).file().required()
 
     override fun run() {
-        val config = ConfigFactory.parseFile(configFile)
+        val configuration = loadConfigurationFrom(configFile)
 
-        val client = obtainClient(config.getString("database.connectionString"))
+        val client = obtainClient(configuration.database.connectionString)
 
-        val databaseConfiguration = vendoorDatabaseSpecification(config)
+        val databaseSpecification = vendoorDatabaseSpecification()
 
-        setupDatabaseFromSpecification(client, databaseConfiguration)
+        setupDatabaseFromSpecification(client, databaseSpecification)
 
         client.close()
     }

@@ -1,10 +1,13 @@
-package me.vendoor.dragonball.api.dsl
+package me.vendoor.dragonball.api.setup
 
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
 import com.mongodb.client.model.IndexOptions
+import me.vendoor.dragonball.api.dsl.CreateCollectionContext
+import me.vendoor.dragonball.api.dsl.CreateDatabaseContext
+import me.vendoor.dragonball.api.dsl.CreateIndexContext
 import me.vendoor.dragonball.api.util.database.hasCollection
 import me.vendoor.dragonball.api.util.time.TimeSource
 import org.bson.BsonDocument
@@ -14,10 +17,10 @@ import org.bson.BsonString
 import org.bson.conversions.Bson
 import java.lang.Exception
 
-fun setupDatabaseFromSpecification(client: MongoClient, specification: DatabaseSpecification) =
-    DatabaseSpecificationProcessor(client, specification).process()
+fun setupDatabaseFromSpecification(client: MongoClient, context: CreateDatabaseContext) =
+    DatabaseSpecificationProcessor(client, context).process()
 
-private class DatabaseSpecificationProcessor(val client: MongoClient, val specification: DatabaseSpecification) {
+private class DatabaseSpecificationProcessor(val client: MongoClient, val context: CreateDatabaseContext) {
     companion object {
         private const val MIGRATION_COLLECTION_NAME = "Migration"
         private const val MIGRATION_COLLECTION_TIMESTAMP_INDEX_NAME = "migration-timestamp-desc"
@@ -27,14 +30,14 @@ private class DatabaseSpecificationProcessor(val client: MongoClient, val specif
     fun process() {
         val database = obtainDatabase()
 
-        specification.collections.forEach { collection ->
+        context.collections.forEach { collection ->
             CollectionSpecificationProcessor(database, collection).process()
         }
 
-        recordMigration(specification.version, database)
+        recordMigration(context.version, database)
     }
 
-    private fun obtainDatabase() = client.getDatabase(specification.name)
+    private fun obtainDatabase() = client.getDatabase(context.name)
 
     private fun recordMigration(version: String, database: MongoDatabase) {
         val options = CreateCollectionOptions()
@@ -64,19 +67,19 @@ private class DatabaseSpecificationProcessor(val client: MongoClient, val specif
     }
 }
 
-private class CollectionSpecificationProcessor(val database: MongoDatabase, val specification: CollectionSpecification) {
+private class CollectionSpecificationProcessor(val database: MongoDatabase, val context: CreateCollectionContext) {
     fun process() {
-        val collection = obtainCollection(specification.name, specification.options, database);
+        val collection = obtainCollection(context.name, context.options, database);
 
-        specification.indexes.forEach { index ->
+        context.indexes.forEach { index ->
             IndexSpecificationProcessor(collection, index).process()
         }
     }
 }
 
-private class IndexSpecificationProcessor(val collection: MongoCollection<BsonDocument>, val specification: IndexSpecification) {
+private class IndexSpecificationProcessor(val collection: MongoCollection<BsonDocument>, val context: CreateIndexContext) {
     fun process() {
-        createIndex(specification.fields, specification.name, specification.options, collection)
+        createIndex(context.fields, context.name, context.options, collection)
     }
 }
 
