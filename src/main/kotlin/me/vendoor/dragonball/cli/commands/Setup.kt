@@ -8,11 +8,8 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
-import com.typesafe.config.ConfigBeanFactory
-import com.typesafe.config.ConfigFactory
-import me.vendoor.dragonball.api.configuration.Configuration
+import me.vendoor.dragonball.api.setup.SetupPerformer
 import me.vendoor.dragonball.specification.vendoorDatabaseSpecification
-import me.vendoor.dragonball.api.setup.setupDatabaseFromSpecification
 import me.vendoor.dragonball.cli.util.loadConfigurationFrom
 import java.io.File
 
@@ -30,7 +27,7 @@ class Setup: CliktCommand(
 
         val databaseSpecification = vendoorDatabaseSpecification()
 
-        setupDatabaseFromSpecification(client, databaseSpecification)
+        SetupPerformer(configuration, client).setupDatabaseFromSpecification(databaseSpecification)
 
         client.close()
     }

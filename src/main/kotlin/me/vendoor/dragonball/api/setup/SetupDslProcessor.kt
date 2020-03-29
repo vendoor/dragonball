@@ -15,10 +15,7 @@ import org.bson.BsonDocument
 import org.bson.conversions.Bson
 import java.lang.Exception
 
-fun setupDatabaseFromSpecification(configuration: Configuration, client: MongoClient, context: CreateDatabaseContext) =
-    DatabaseSpecificationProcessor(configuration, client, context).process()
-
-private class DatabaseSpecificationProcessor(val configuration: Configuration, val client: MongoClient,
+class DatabaseSpecificationProcessor(val configuration: Configuration, val client: MongoClient,
                                              val context: CreateDatabaseContext) {
     fun process() {
         val database = client.getDatabase(configuration.database.name)
