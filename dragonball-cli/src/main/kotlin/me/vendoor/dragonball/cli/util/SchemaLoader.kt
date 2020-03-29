@@ -14,6 +14,8 @@ class SchemaLoader {
         )
 
         @Suppress("UNCHECKED_CAST")
-        return classLoader.loadClass(name) as Schema
+        val clazz = classLoader.loadClass(name) as Class<Schema>
+
+        return clazz.getConstructor().newInstance()
     }
 }
