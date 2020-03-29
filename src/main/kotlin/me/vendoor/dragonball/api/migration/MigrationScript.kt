@@ -1,14 +1,8 @@
 package me.vendoor.dragonball.api.migration
 
-abstract class MigrationScript {
-    init {
-        // No worries about the leak.
-        MigrationScriptRegistry.registerMigrationScript(this)
-    }
-
-    abstract fun getVersion(): String
-
-    abstract fun getDescription(): String
-
+abstract class MigrationScript(
+        val version: String,
+        val description: String
+) {
     abstract fun migrate(context: MigrationContext)
 }

@@ -6,5 +6,8 @@ fun vendoorDatabaseSpecification() = database {
     version { "1.0.0" }
 
     collections {
+        collection {
+            name { "User" }
+        }
     }
 }
