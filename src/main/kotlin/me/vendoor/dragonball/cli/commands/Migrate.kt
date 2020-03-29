@@ -30,7 +30,7 @@ class Migrate: CliktCommand(
         val client = obtainClient(configuration.database.connectionString)
         val database = client.getDatabase(configuration.database.name)
 
-        val performer = MigrationPerformer(configuration, database)
+        MigrationPerformer(database, emptyList()).perform(targetVersion)
 
         client.close()
     }

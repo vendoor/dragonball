@@ -13,12 +13,15 @@ import java.util.TreeMap
 import kotlin.Comparator
 
 class MigrationPerformer(
-        private val database: MongoDatabase
+        private val database: MongoDatabase,
+        scripts: List<MigrationScript>
 ) {
     companion object {
         private const val COLLECTION_NAME = "Migration"
         private const val INITIAL_DESCRIPTION = "New setup."
     }
+
+    private val navigableScripts = scriptListToNavigableMap(scripts)
 
     fun setupMigration(initialVersion: String) {
         val collection = createMigrationCollection()
@@ -26,7 +29,7 @@ class MigrationPerformer(
         collection.insertOne(initialMigration(initialVersion))
     }
 
-    fun perform(targetVersion: String, scripts: List<MigrationScript>) {
+    fun perform(targetVersion: String) {
         val currentVersion = retrieveCurrentVersion(database)
 
         if (currentVersion == null) {
@@ -35,12 +38,13 @@ class MigrationPerformer(
             return
         }
 
-        val navigableScripts = scriptListToNavigableMap(scripts)
         val applicableScripts = navigableScripts.subMap(currentVersion, false, targetVersion, true)
 
         val context = MigrationContext(database)
 
         applicableScripts.forEach { (version, script) ->
+            println("Performing migration to $version")
+
             script.perform(context)
         }
     }
@@ -88,7 +92,7 @@ class MigrationPerformer(
             val version1 = Version.valueOf(o1)
             val version2 = Version.valueOf(o2)
 
-            return version1.compareTo(version2);
+            return version1.compareTo(version2)
         }
     }
 }
