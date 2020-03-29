@@ -4,6 +4,7 @@ import com.github.zafarkhaja.semver.Version
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
 import com.typesafe.config.Config
+import me.vendoor.dragonball.api.configuration.Configuration
 import me.vendoor.dragonball.api.util.database.getCollectionIfExists
 import me.vendoor.dragonball.api.util.database.getDatabaseIfExists
 import org.bson.BsonDocument
@@ -13,33 +14,25 @@ import java.util.NavigableMap
 import java.util.TreeMap
 import kotlin.Comparator
 
-object MigrationPerformer {
-    private val scripts: NavigableMap<String, MigrationScript> = TreeMap<String, MigrationScript>(SemverComparator())
-
-    fun registerMigrationScript(script: MigrationScript) {
-        scripts[script.getVersion()] = script;
-    }
-
-    fun perform(config: Config, targetVersion: String, client: MongoClient) {
-        val database = client.getDatabaseIfExists(config.getString("database.name"))
-
-        if (database == null) {
-            println("Database does not exist, please first create it using setup!")
-            return
-        }
-
+class MigrationPerformer(
+        private val configuration: Configuration,
+        private val database: MongoDatabase
+) {
+    fun perform(targetVersion: String, scripts: List<MigrationScript>) {
         val currentVersion = retrieveCurrentVersion(database)
 
         if (currentVersion == null) {
             println("Could not read the actual database version!")
+
             return
         }
 
-        val applicableMap = scripts.subMap(currentVersion, false, targetVersion, true)
+        val navigableScripts = scriptListToNavigableMap(scripts)
+        val applicableScripts = navigableScripts.subMap(currentVersion, false, targetVersion, true)
 
         val context = MigrationContext(database)
 
-        applicableMap.forEach { (version, script) ->
+        applicableScripts.forEach { (version, script) ->
             script.perform(context)
         }
     }
@@ -59,6 +52,16 @@ object MigrationPerformer {
                         return null
                     }
                 }
+    }
+
+    private fun scriptListToNavigableMap(scripts: List<MigrationScript>): NavigableMap<String, MigrationScript> {
+        val result = TreeMap<String, MigrationScript>(SemverComparator())
+
+        scripts.forEach {
+            result[it.getVersion()] = it
+        }
+
+        return result
     }
 
     private class SemverComparator : Comparator<String> {
