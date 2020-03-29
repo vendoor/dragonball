@@ -140,7 +140,7 @@
                                     <addClasspath>true</addClasspath>
                                     <classpathPrefix>lib/</classpathPrefix>
                                     <mainClass>
-                                        me.vendoor.dragonball.ApplicationKt
+                                        me.vendoor.dragonball.cli.ApplicationKt
                                     </mainClass>
                                 </manifest>
                             </archive>
@@ -160,7 +160,7 @@
                                     <addClasspath>true</addClasspath>
                                     <classpathPrefix>lib/</classpathPrefix>
                                     <mainClass>
-                                        me.vendoor.dragonball.ApplicationKt
+                                        me.vendoor.dragonball.cli.ApplicationKt
                                     </mainClass>
                                 </manifest>
                             </archive>
