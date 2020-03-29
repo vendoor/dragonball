@@ -9,7 +9,9 @@ class DropContextProcessor(private val database: MongoDatabase,
     fun process() {
         context.collections.forEach {
             database.getCollectionIfExists(it)
-                    ?.drop()
+                    ?.run {
+                        this.drop()
+                    }
         }
 
         context.indexes.forEach {

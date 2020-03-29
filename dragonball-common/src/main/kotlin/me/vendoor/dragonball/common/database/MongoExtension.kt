@@ -25,7 +25,9 @@ fun openClient(connectionString: String): MongoClient {
 }
 
 fun MongoClient.hasDatabase(name: String) =
-        this.listDatabaseNames().contains(name)
+        this.listDatabaseNames()
+                .into(ArrayList())
+                .contains(name)
 
 fun MongoClient.getDatabaseIfExists(name: String) =
         if (this.hasDatabase(name)) {
@@ -34,8 +36,10 @@ fun MongoClient.getDatabaseIfExists(name: String) =
             null
         }
 
-fun MongoDatabase.hasCollection(name: String) =
-        this.listCollectionNames().contains(name)
+fun MongoDatabase.hasCollection(name: String): Boolean =
+        this.listCollectionNames()
+            .into(ArrayList())
+            .contains(name)
 
 fun <TDocument> MongoDatabase.getCollectionIfExists(name: String, documentClass: Class<TDocument>) =
         if (this.hasCollection(name)) {
